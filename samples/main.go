@@ -1,6 +1,6 @@
 package main
 
-import "mapper"
+import "github.com/Codexiaoyi/go-mapper"
 
 type src struct {
 	A string
