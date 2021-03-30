@@ -12,6 +12,8 @@ type Src struct {
 	B int
 	C bool
 	D []string
+	AnonymousTest
+	int
 }
 
 type Dest struct {
@@ -19,6 +21,12 @@ type Dest struct {
 	B int
 	C bool
 	D []string
+	AnonymousTest
+	int
+}
+
+type AnonymousTest struct {
+	AA int
 }
 
 var Test_Src Src
@@ -28,10 +36,12 @@ var Test_Dest Dest
 //setup and teardown
 func TestMain(m *testing.M) {
 	Test_Src = Src{
-		A: "test",
-		B: 123,
-		C: true,
-		D: []string{"test1", "test2", "test3"},
+		A:             "test",
+		B:             123,
+		C:             true,
+		D:             []string{"test1", "test2", "test3"},
+		AnonymousTest: AnonymousTest{AA: 1},
+		int:           2,
 	}
 	retCode := m.Run() //run test
 	os.Exit(retCode)
@@ -42,10 +52,11 @@ func TestMain(m *testing.M) {
 func TestStructMapByFieldName(t *testing.T) {
 	//arrange
 	expect_dest := Dest{
-		A: Test_Src.A,
-		B: Test_Src.B,
-		C: Test_Src.C,
-		D: Test_Src.D,
+		A:             Test_Src.A,
+		B:             Test_Src.B,
+		C:             Test_Src.C,
+		D:             Test_Src.D,
+		AnonymousTest: Test_Src.AnonymousTest,
 	}
 
 	//act

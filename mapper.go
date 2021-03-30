@@ -25,7 +25,7 @@ func StructMapByFieldName(src interface{}, dest interface{}) error {
 		currentField := destPtr.Type().Field(i)
 		name := currentField.Name
 		//如果与src中字段名匹配并且类型相同则赋值
-		if dic[name].IsValid() && dic[name].Kind() == currentField.Type.Kind() {
+		if dic[name].IsValid() && dic[name].Kind() == currentField.Type.Kind() && dic[name].CanSet() {
 			destPtr.FieldByName(name).Set(dic[name])
 		}
 	}
