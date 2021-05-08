@@ -8,21 +8,21 @@ import (
 
 //declare struct
 type Src struct {
-	A string
-	B int
-	C bool
-	D []string
-	AnonymousTest
-	int
+	A             string   `mapper:"A"`
+	B             int      `mapper:"B"`
+	C             bool     `mapper:"C"`
+	D             []string `mapper:"D"`
+	AnonymousTest `mapper:"E"`
+	int           `mapper:"F"`
 }
 
 type Dest struct {
-	A string
-	B int
-	C bool
-	D []string
-	AnonymousTest
-	int
+	A             string   `mapper:"A"`
+	B             int      `mapper:"B"`
+	C             bool     `mapper:"C"`
+	D             []string `mapper:"D"`
+	AnonymousTest `mapper:"E"`
+	int           `mapper:"F"`
 }
 
 type AnonymousTest struct {
@@ -52,15 +52,33 @@ func TestMain(m *testing.M) {
 func TestStructMapByFieldName(t *testing.T) {
 	//arrange
 	expect_dest := Dest{
-		A:             Test_Src.A,
-		B:             Test_Src.B,
-		C:             Test_Src.C,
-		D:             Test_Src.D,
-		AnonymousTest: Test_Src.AnonymousTest,
+		A: Test_Src.A,
+		B: Test_Src.B,
+		C: Test_Src.C,
 	}
 
 	//act
 	err := StructMapByFieldName(&Test_Src, &Test_Dest)
+	if err != nil {
+		t.Errorf("type error:%s", err)
+	}
+
+	//assert
+	if !reflect.DeepEqual(expect_dest, Test_Dest) {
+		t.Errorf("expect:%v,actual:%v", expect_dest, Test_Dest)
+	}
+}
+
+func TestStructMapByTag(t *testing.T) {
+	//arrange
+	expect_dest := Dest{
+		A: Test_Src.A,
+		B: Test_Src.B,
+		C: Test_Src.C,
+	}
+
+	//act
+	err := StructMapByTag(&Test_Src, &Test_Dest)
 	if err != nil {
 		t.Errorf("type error:%s", err)
 	}
@@ -76,5 +94,11 @@ func TestStructMapByFieldName(t *testing.T) {
 func BenchmarkStructMapByFieldName(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		StructMapByFieldName(&Test_Src, &Test_Dest)
+	}
+}
+
+func BenchmarkStructMapByTag(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		StructMapByTag(&Test_Src, &Test_Dest)
 	}
 }
