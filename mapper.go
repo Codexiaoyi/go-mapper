@@ -7,13 +7,13 @@ import (
 
 //根据字段名称将src中的值自动映射到dest中
 func StructMapByFieldName(src interface{}, dest interface{}) error {
+	if reflect.TypeOf(src).Kind() != reflect.Ptr || reflect.TypeOf(dest).Kind() != reflect.Ptr {
+		return errors.New("src and dst must be addressable.")
+	}
+
 	dic := make(map[string]reflect.Value)
 	srcPtr := reflect.ValueOf(src).Elem()
 	destPtr := reflect.ValueOf(dest).Elem()
-
-	if srcPtr.Kind() != reflect.Struct || destPtr.Kind() != reflect.Struct {
-		return errors.New("Only type of Ptr")
-	}
 
 	//存储src字段信息
 	for i := 0; i < srcPtr.NumField(); i++ {
@@ -35,7 +35,7 @@ func StructMapByFieldName(src interface{}, dest interface{}) error {
 
 func StructMapByTag(src interface{}, dest interface{}) error {
 	//not addressable
-	if reflect.TypeOf(src).Kind() != reflect.Ptr && reflect.TypeOf(dest).Kind() != reflect.Ptr {
+	if reflect.TypeOf(src).Kind() != reflect.Ptr || reflect.TypeOf(dest).Kind() != reflect.Ptr {
 		return errors.New("src and dst must be addressable.")
 	}
 
@@ -57,20 +57,7 @@ func StructMapByTag(src interface{}, dest interface{}) error {
 			//通过val与tagMap找到对应于vDst的字段
 			//有可能map中的值不存在
 			if value, ok := tagMap[val]; ok && value.IsValid() && value.CanSet() && vSrc.Field(i).Kind() == value.Kind() {
-				switch value.Kind() {
-				case reflect.Int:
-					value.SetInt(vSrc.Field(i).Int())
-				case reflect.Bool:
-					value.SetBool(vSrc.Field(i).Bool())
-				case reflect.Uint:
-					value.SetUint(vSrc.Field(i).Uint())
-				case reflect.Float64:
-					value.SetFloat(vSrc.Field(i).Float())
-				case reflect.Complex64:
-					value.SetComplex(vSrc.Field(i).Complex())
-				case reflect.String:
-					value.SetString(vSrc.Field(i).String())
-				}
+				value.Set(vSrc.Field(i))
 			}
 		}
 	}
