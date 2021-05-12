@@ -6,7 +6,7 @@ import (
 )
 
 //根据字段名称将src中的值自动映射到dest中
-func StructMapByFieldName(src interface{}, dest interface{}) error {
+func StructMapByFieldName(src, dest interface{}) error {
 	if reflect.TypeOf(src).Kind() != reflect.Ptr || reflect.TypeOf(dest).Kind() != reflect.Ptr {
 		return errors.New("src and dst must be addressable.")
 	}
@@ -33,7 +33,8 @@ func StructMapByFieldName(src interface{}, dest interface{}) error {
 	return nil
 }
 
-func StructMapByTag(src interface{}, dest interface{}) error {
+//根据字段标签将src中的值自动映射到dest中
+func StructMapByFieldTag(src, dest interface{}) error {
 	//not addressable
 	if reflect.TypeOf(src).Kind() != reflect.Ptr || reflect.TypeOf(dest).Kind() != reflect.Ptr {
 		return errors.New("src and dst must be addressable.")

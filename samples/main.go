@@ -33,7 +33,7 @@ func main() {
 
 	var dest2 dest
 
-	err = mapper.StructMapByTag(&src, &dest2)
+	err = mapper.StructMapByFieldTag(&src, &dest2)
 	if err != nil {
 		fmt.Println(err)
 	}
