@@ -8,25 +8,24 @@ import (
 
 //declare struct
 type Src struct {
-	A string
-	B int
-	C bool
-	D []string
-	AnonymousTest
-	int
+	A             string   `mapper:"A"`
+	B             int      `mapper:"B"`
+	C             bool     `mapper:"C"`
+	D             []string `mapper:"D"`
+	AnonymousTest `mapper:"E"`
 }
 
 type Dest struct {
-	A string
-	B int
-	C bool
-	D []string
-	AnonymousTest
-	int
+	A             string   `mapper:"A"`
+	B             int      `mapper:"B"`
+	C             bool     `mapper:"C"`
+	D             []string `mapper:"D"`
+	AnonymousTest `mapper:"E"`
 }
 
 type AnonymousTest struct {
 	AA int
+	bb int
 }
 
 var Test_Src Src
@@ -40,8 +39,7 @@ func TestMain(m *testing.M) {
 		B:             123,
 		C:             true,
 		D:             []string{"test1", "test2", "test3"},
-		AnonymousTest: AnonymousTest{AA: 1},
-		int:           2,
+		AnonymousTest: AnonymousTest{AA: 1, bb: 2},
 	}
 	retCode := m.Run() //run test
 	os.Exit(retCode)
@@ -71,10 +69,38 @@ func TestStructMapByFieldName(t *testing.T) {
 	}
 }
 
+func TestStructMapByFieldTag(t *testing.T) {
+	//arrange
+	expect_dest := Dest{
+		A:             Test_Src.A,
+		B:             Test_Src.B,
+		C:             Test_Src.C,
+		D:             Test_Src.D,
+		AnonymousTest: Test_Src.AnonymousTest,
+	}
+
+	//act
+	err := StructMapByFieldTag(&Test_Src, &Test_Dest)
+	if err != nil {
+		t.Errorf("type error:%s", err)
+	}
+
+	//assert
+	if !reflect.DeepEqual(expect_dest, Test_Dest) {
+		t.Errorf("expect:%v,actual:%v", expect_dest, Test_Dest)
+	}
+}
+
 //性能测试
 //benchmark test
 func BenchmarkStructMapByFieldName(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		StructMapByFieldName(&Test_Src, &Test_Dest)
+	}
+}
+
+func BenchmarkStructMapByFieldTag(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		StructMapByFieldTag(&Test_Src, &Test_Dest)
 	}
 }
